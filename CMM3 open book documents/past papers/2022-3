@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Dec 10 14:43:39 2023
+
+@author: alfie
+"""
+
+# Errors 
+# 1: Missing return of Code function
+# 2: Switching c and b variables
+# 3: spelling mistake 
+MAX_ITER = 1000000
+def func( x ):
+    return (x**3 - 4*(x*2) + 10)
+
+
+def Code(a,Ac);
+    if func(a) * func(b) ≤ 0:
+        print("You have not assumed correct values of a and b")
+        return 0
+    c = a
+    for i in range(MAX_ITER):
+        c = (b * func(b) - a * func(a))/ (func(c) - func(a))
+        if func(b) == 0:
+            break
+        elif func(b) * func(a) < 0:
+            b = a
+        else:
+            a = c
+    print("The value of root is : " , '%.4f' %c)

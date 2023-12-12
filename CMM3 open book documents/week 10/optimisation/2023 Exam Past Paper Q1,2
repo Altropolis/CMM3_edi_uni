@@ -1,0 +1,234 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec  9 18:31:36 2023
+
+@author: alfie
+"""
+import numpy as np
+
+
+# 1a) Write a code to evaluate the truncated series given for a specified number of terms N. 
+'''
+def pi_Calc(N):
+    sm = 0
+    
+    for i in range(1, N+1):
+        sm = sm + (1/i)**2
+        
+    return np.sqrt(6*sm)
+
+#Approximation of pi with 10 terms
+print(pi_Calc(10))
+
+#Approximation of pi with 100 terms
+print(pi_Calc(100))
+
+#Approximation of pi with 1000 terms
+print(pi_Calc(1000))
+
+# 1b) i)
+def true_Error(x):
+    return (x-np.pi)/np.pi
+
+
+#Approximation of pi with 10 terms and its true error
+print(pi_Calc(10), true_Error(pi_Calc(10)))
+      
+#Approximation of pi with 100 terms and its true error
+print(pi_Calc(100), true_Error(pi_Calc(100)))
+      
+#Approximation of pi with 1000terms and its true error
+print(pi_Calc(1000), true_Error(pi_Calc(1000)))
+'''
+# 1b) ii)
+'''
+def pi_Calc_rel(N):
+    sm = 0
+    
+    for i in range(1, N+1):
+        sm = sm + (1/i)**2
+        sm_1 = sm - (1/i)**2
+    return np.sqrt(6*sm), np.sqrt(6*sm_1)
+
+
+def rel_Error(x, y):
+    return (x-y)/x
+
+
+#Approximation of pi with 10 terms and its true error
+print(pi_Calc_rel(10), rel_Error(pi_Calc_rel(10)[0], pi_Calc_rel(10)[1]))
+      
+#Approximation of pi with 100 terms and its true error
+print(pi_Calc_rel(100), rel_Error(pi_Calc_rel(100)[0], pi_Calc_rel(100)[1]))
+      
+#Approximation of pi with 1000terms and its true error
+print(pi_Calc_rel(1000), rel_Error(pi_Calc_rel(1000)[0], pi_Calc_rel(1000)[1]))
+'''
+
+# 2a)
+
+import sympy as sp
+import math as math
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------
+# inputs
+
+# functions that returns dy/dx
+# i.e. the equation we want to solve: dy/dx = - y
+
+def model(y,x):
+    dydx = 10*y**2 - y**3
+    return dydx
+
+# initial conditions
+x0 = 0
+y0 = 0.02
+# total solution interval
+x_final = 10
+# step size
+h = 0.01
+# ------------------------------------------------------
+
+    # ------------------------------------------------------
+    # Euler method
+def euler(model, x0, y0, x_final, h):
+    # number of steps
+    n_step = math.ceil(x_final/h)
+    
+    # Definition of arrays to store the solution
+    y_eul = np.zeros(n_step+1)
+    x_eul = np.zeros(n_step+1)
+    
+    # Initialize first element of solution arrays 
+    # with initial condition
+    y_eul[0] = y0
+    x_eul[0] = x0 
+    
+    # Populate the x array
+    for i in range(n_step):
+        x_eul[i+1]  = x_eul[i]  + h
+    
+    # Apply Euler method n_step times
+    for i in range(n_step):
+        # compute the slope using the differential equation
+        slope = model(y_eul[i],x_eul[i]) 
+        # use the Euler method
+        y_eul[i+1] = y_eul[i] + h * slope  
+    # ------------------------------------------------------
+    # plot results
+    plt.plot(x_eul, y_eul , 'b.-')
+    plt.xlabel('x')
+    plt.ylabel('y(x)')
+    plt.show()
+    # ------------------------------------------------------
+    
+    dydx_array= model(y_eul, x_eul)
+    
+
+    return x_eul, y_eul, dydx_array, h
+# ------------------------------------------------------
+'''
+#Print the value of y at t=4, 5, 10
+
+x_eul = euler(model, x0, y0, x_final, h)[0]
+
+y_eul = euler(model, x0, y0, x_final, h)[1]
+
+def index(n, x_eul):
+    index = int(1/h * n)
+    return np.round(x_eul[index]), index
+
+index_1 = index(4, x_eul)
+index_2 = index(5, x_eul)
+index_3 = index(10, x_eul)
+
+#y at time t=4
+print(f'at time t={index_1[0]}, y={y_eul[index_1[1]]}')
+
+#y at time t=5
+print(f'at time t={index_2[0]}, y={y_eul[index_2[1]]}')
+
+#y at time t=10
+print(f'at time t={index_3[0]}, y={y_eul[index_3[1]]}')
+
+#Justification for step size of 0.01. Since there are both fast and slow components to this curve, we need to have a step
+#size small enough to accurately a curve of that rate, for the whole of this curve. So a step size was used that accurately
+#represents the fast component of this curve, which automatically accurately represents the slow 
+#moving components of this graph.
+'''
+# 2b) i) y0 = 0.02
+'''
+x_eul = euler(model, x0, y0, x_final, h)[0]
+
+y_eul = euler(model, x0, y0, x_final, h)[1]
+
+dydx_array = euler(model, x0, y0, x_final, h)[2]
+
+
+def max_dydx(euler, model, y0, x_final):
+    max_dydx = max(euler(model, x0, y0, x_final, 0.01)[2])
+    print(max_dydx)
+    return max_dydx
+dydx = max_dydx(euler, model, 0.02, x_final)
+
+ig_time_index = np.where(dydx_array == dydx)
+print(ig_time_index)
+
+ig_time = x_eul[ig_time_index]
+
+print(f'The time of ignition is t = {ig_time} at y0 = h = 0.02')
+
+# 2b) ii) y0 = 0.01
+
+eu = euler(model, x0, 0.01, 20, h)
+
+x_eul = eu[0]
+
+y_eul = eu[1]
+
+dydx_array = eu[2]
+
+dydx = max_dydx(euler, model, 0.01, 20)
+
+ig_time_index = np.where(dydx_array == dydx)
+print(ig_time_index)
+
+ig_time = x_eul[ig_time_index]
+
+print(f'The time of ignition is t = {ig_time} at y0 = h = 0.01')
+
+# 2b) iii)  y0 = 0.005
+
+eu = euler(model, x0, 0.005, 40, h)
+
+x_eul = eu[0]
+
+y_eul = eu[1]
+
+dydx_array = eu[2]
+
+dydx = max_dydx(euler, model, 0.005, 40)
+
+ig_time_index = np.where(dydx_array == dydx)
+print(ig_time_index)
+
+ig_time = x_eul[ig_time_index]
+
+print(f'The time of ignition is t = {ig_time} at y0 = h = 0.005')
+'''
+# 2c)
+
+
+def h_test():
+    h_sizes = []
+    for i in range(1, 4):
+        x = i/100
+        h_sizes.append(euler(model, x0, y0, x_final, x)[3])
+    return h_sizes
+    
+print(h_test())
+
+# It can be seen from the output that at h = 0.02, the curve is still relagtively stable, but at h = 0.03, a step of only
+# 0.01, the curve becomes unstable and starts oscillating rapidly after initial ignition.
